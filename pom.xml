@@ -8,35 +8,60 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>23</java.version>
+        <java.version>21</java.version>
         <spring-boot.version>3.2.2</spring-boot.version>
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web -->
+        <!-- Spring Boot Starter Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring-boot.version}</version>
         </dependency>
+
+        <!-- Spring Boot Starter Test (JUnit 5) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>${spring-boot.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
         
         <dependency>
-		    <groupId>org.springframework.boot</groupId>
-		    <artifactId>spring-boot-starter-test</artifactId>
-		    <version>3.4.2</version>
-		    <scope>test</scope>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>1.4.14</version>
 		</dependency>
-		
+
+
 
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Plugin di Spring Boot per generare un JAR eseguibile -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
+
+            <!-- Plugin per la compilazione con Java 21 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
