@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Awesome Pizza - Gestione Ordini</title>
+    <style>
+        body {
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: red;
+        }
+        .lista-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        ul {
+            list-style-position: inside;
+            text-align: left;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Awesome Pizza</h1>
+    
+    <h2>Ordina una Pizza</h2>
+    <input type="text" id="nomePizza" placeholder="Inserisci il nome della pizza">
+    <button onclick="aggiungiOrdine()">Aggiungi Ordine</button>
+
+    <h2>Lista Ordini</h2>
+    <button onclick="caricaOrdini()">Aggiorna Lista</button>
+    <button onclick="preparareProssimoOrdine()">Segna prossimo come pronto</button>
+    
+    <div class="lista-container">
+        <ul id="listaOrdini"></ul>
+    </div>
+
+    <script>
+        function aggiungiOrdine() {
+            let nomePizza = document.getElementById("nomePizza").value;
+            if (!nomePizza) {
+                alert("Inserisci un nome per la pizza!");
+                return;
+            }
+            fetch("/orders", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nomePizza: nomePizza })
+            })
+            .then(response => response.json())
+            .then(() => {
+                document.getElementById("nomePizza").value = "";
+                caricaOrdini();
+            })
+            .catch(error => console.error("Errore:", error));
+        }
+
+        function caricaOrdini() {
+            fetch("/orders")
+            .then(response => response.json())
+            .then(data => {
+                let lista = document.getElementById("listaOrdini");
+                lista.innerHTML = "";
+                data.forEach(ordine => {
+                    let li = document.createElement("li");
+                    li.textContent = `ID: ${ordine.id}, Pizza: ${ordine.nomePizza}, Stato: ${ordine.status}`;
+                    lista.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Errore:", error));
+        }
+
+        function preparareProssimoOrdine() {
+            fetch("/orders/next", { method: "PUT" })
+            .then(response => response.json())
+            .then(() => caricaOrdini())
+            .catch(error => console.error("Errore:", error));
+        }
+
+        window.onload = caricaOrdini;
+    </script>
+</body>
+</html>
